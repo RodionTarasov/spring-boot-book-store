@@ -1,7 +1,7 @@
 package mate.academy.springbootbookstore.repository;
 
-import mate.academy.springbootbookstore.model.Book;
 import java.util.List;
+import mate.academy.springbootbookstore.model.Book;
 
 public interface BookRepository {
     Book save(Book book);
