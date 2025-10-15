@@ -5,11 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Table(name = "books")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,16 +29,4 @@ public class Book {
     private String description;
     private String coverImage;
 
-    @Override
-    public String toString() {
-        return "Book{"
-                + "id=" + id
-                + ", title='" + title + '\''
-                + ", author='" + author + '\''
-                + ", isbn='" + isbn + '\''
-                + ", price=" + price
-                + ", description='" + description + '\''
-                + ", coverImage='" + coverImage + '\''
-                + '}';
-    }
 }
