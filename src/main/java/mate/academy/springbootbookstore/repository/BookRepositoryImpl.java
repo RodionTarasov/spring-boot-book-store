@@ -1,6 +1,7 @@
 package mate.academy.springbootbookstore.repository;
 
 import java.util.List;
+import java.util.Optional;
 import mate.academy.springbootbookstore.exception.DataProcessingException;
 import mate.academy.springbootbookstore.model.Book;
 import org.hibernate.Session;
@@ -37,6 +38,14 @@ public class BookRepositoryImpl implements BookRepository {
             if (session != null) {
                 session.close();
             }
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            Book book = session.get(Book.class, id);
+            return Optional.ofNullable(book);
         }
     }
 
