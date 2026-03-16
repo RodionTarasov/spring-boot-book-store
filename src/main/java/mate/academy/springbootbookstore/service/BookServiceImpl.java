@@ -3,11 +3,14 @@ package mate.academy.springbootbookstore.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.BookDto;
+import mate.academy.springbootbookstore.dto.BookSearchParameters;
 import mate.academy.springbootbookstore.dto.CreateBookRequestDto;
 import mate.academy.springbootbookstore.exception.EntityNotFoundException;
 import mate.academy.springbootbookstore.mapper.BookMapper;
 import mate.academy.springbootbookstore.model.Book;
-import mate.academy.springbootbookstore.repository.BookRepository;
+import mate.academy.springbootbookstore.repository.book.BookRepository;
+import mate.academy.springbootbookstore.repository.book.BookSpecificationBuilder;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final BookSpecificationBuilder bookSpecificationBuilder;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
@@ -41,5 +45,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteById(long id) {
         bookRepository.deleteById(id);
+    }
+
+    @Override
+    public List<BookDto> search(BookSearchParameters searchParameters) {
+        Specification<Book> bookSpecification = bookSpecificationBuilder.build(searchParameters);
+        return bookRepository.findAll(bookSpecification)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 }
