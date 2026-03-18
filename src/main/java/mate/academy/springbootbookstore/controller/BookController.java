@@ -1,6 +1,8 @@
 package mate.academy.springbootbookstore.controller;
 
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.BookDto;
 import mate.academy.springbootbookstore.dto.BookSearchParameters;
@@ -31,7 +33,8 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
     }
 
