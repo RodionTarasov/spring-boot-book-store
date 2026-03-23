@@ -18,7 +18,6 @@ import java.util.Map;
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String TIMESTAMP = "timestamp";
-    private static final String STATUS = "status";
     private static final String ERRORS = "errors";
 
     @Override
@@ -30,18 +29,16 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     ) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(TIMESTAMP, LocalDateTime.now());
-        body.put(STATUS, HttpStatus.BAD_REQUEST);
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(this::getErrorMessage)
                 .toList();
         body.put(ERRORS, errors);
-        return new ResponseEntity<>(body, headers, status);
+        return new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
     }
 
     public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put(TIMESTAMP, LocalDateTime.now());
-        body.put(STATUS, HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
