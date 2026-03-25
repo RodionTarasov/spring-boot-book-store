@@ -2,6 +2,7 @@ package mate.academy.springbootbookstore.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.BookDto;
 import mate.academy.springbootbookstore.dto.BookSearchParameters;
@@ -37,8 +38,9 @@ public class BookController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new book", description = "Create a new book")
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public BookDto createBook(@RequestBody @Valid CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
     }
 
@@ -48,4 +50,14 @@ public class BookController {
     public void deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public BookDto updateById(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateBookRequestDto requestDto
+    ) {
+        return bookService.update(id, requestDto);
+    }
 }
+
+
