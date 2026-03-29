@@ -1,6 +1,6 @@
 package mate.academy.springbootbookstore.repository;
 
-import mate.academy.springbootbookstore.dto.BookSearchParameters;
+import mate.academy.springbootbookstore.dto.book.BookSearchParameters;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface SpecificationBuilder<T> {
