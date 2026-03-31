@@ -28,5 +28,4 @@ public class User {
     @Column(name = "shipping_address")
     private String shippingAddress;
 
-
 }
