@@ -3,6 +3,7 @@ package mate.academy.springbootbookstore.validation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Object> {
     private String firstFieldName;
@@ -26,11 +27,7 @@ public class FieldMatchValidator implements ConstraintValidator<FieldMatch, Obje
             Object firstValue = firstField.get(value);
             Object secondValue = secondField.get(value);
 
-            if (firstValue == null && secondValue == null) {
-                return true;
-            }
-
-            return firstValue != null && firstValue.equals(secondValue);
+            return Objects.equals(firstValue, secondValue);
 
         } catch (Exception e) {
             return false;
