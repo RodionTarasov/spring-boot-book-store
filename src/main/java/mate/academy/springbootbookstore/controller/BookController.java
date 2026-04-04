@@ -11,12 +11,13 @@ import mate.academy.springbootbookstore.service.book.BookService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Book management", description = "Endpoint for managing book")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/api/books")
 public class BookController {
     private final BookService bookService;
 
@@ -37,6 +38,7 @@ public class BookController {
         return bookService.search(searchParameters, pageable);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new book", description = "Create a new book")
@@ -47,11 +49,13 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a book", description = "Delete a book")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public BookDto updateById(
             @PathVariable Long id,
             @Valid @RequestBody CreateBookRequestDto requestDto
