@@ -1,0 +1,69 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-users
+      author: kozma
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: email
+                  value: "jon@gt.ia"
+              - column:
+                  name: password
+                  value: "1234567"
+              - column:
+                  name: first_name
+                  value: "Jon"
+              - column:
+                  name: last_name
+                  value: "Snow"
+              - column:
+                  name: shipping_address
+                  value: "Winterfell"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: email
+                  value: "bran@gt.ia"
+              - column:
+                  name: password
+                  value: "qwerty"
+              - column:
+                  name: first_name
+                  value: "Bran"
+              - column:
+                  name: last_name
+                  value: "Stark"
+              - column:
+                  name: shipping_address
+                  value: "Winterfell"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: email
+                  value: "razdavlenaia_golova@gt.ia"
+              - column:
+                  name: password
+                  value: "qwerty"
+              - column:
+                  name: first_name
+                  value: "Oberyn"
+              - column:
+                  name: last_name
+                  value: "Martell"
+              - column:
+                  name: shipping_address
+                  value: "Sunspear"
+
