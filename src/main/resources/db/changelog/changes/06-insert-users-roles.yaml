@@ -23,7 +23,6 @@ databaseChangeLog:
                   name: role_id
                   value: 2
 
-
         - insert:
             tableName: users_roles
             columns:
@@ -32,7 +31,7 @@ databaseChangeLog:
                   value: 2
               - column:
                   name: role_id
-                  value: 2
+                  value: 1
 
         - insert:
             tableName: users_roles
@@ -42,4 +41,4 @@ databaseChangeLog:
                   value: 3
               - column:
                   name: role_id
-                  value: 2
+                  value: 1

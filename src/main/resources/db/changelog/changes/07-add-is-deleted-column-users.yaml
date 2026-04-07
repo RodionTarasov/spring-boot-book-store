@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-is-deleted-column
+      author: kozma
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: is_deleted
+                  type: bit
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: update-is-deleted-values
+      author: kozma
+      changes:
+        - update:
+            tableName: users
+            columns:
+              - column:
+                  name: is_deleted
+                  valueBoolean: false
