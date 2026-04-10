@@ -1,5 +1,6 @@
 package mate.academy.springbootbookstore.service.user;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.user.UserRegistrationRequestDto;
 import mate.academy.springbootbookstore.dto.user.UserResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
@@ -32,8 +34,7 @@ public class UserServiceImpl implements UserService {
 
         Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role ROLE_USER not found in database. " +
-                                "Please insert it into the roles table.")
+                        "Default role ROLE_USER not found in database.f")
         );
 
         user.getRoles().add(role);
