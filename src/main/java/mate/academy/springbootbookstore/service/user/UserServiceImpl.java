@@ -29,8 +29,12 @@ public class UserServiceImpl implements UserService {
                     requestDto.getEmail());
         }
 
-        User user = userMapper.toModel(requestDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User();
+        user.setEmail(requestDto.getEmail());
+        user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
+        user.setFirstName(requestDto.getFirstName());
+        user.setLastName(requestDto.getLastName());
+        user.setShippingAddress(requestDto.getShippingAddress());
 
         Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
                 () -> new RuntimeException(
