@@ -26,8 +26,8 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     @Operation(
-            summary = "Registration a new user",
-            description = "Registration a new user in a database"
+            summary = "User login",
+            description = "Authenticate user and return JWT toke"
     )
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {
@@ -35,7 +35,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public UserLoginResponseDto login(@RequestBody UserLoginRequestDto requestDto) {
+    @Operation(
+            summary = "Registration a new user",
+            description = "Registration a new user in a database"
+    )
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto requestDto) {
         return authenticationService.authenticate(requestDto);
     }
 }

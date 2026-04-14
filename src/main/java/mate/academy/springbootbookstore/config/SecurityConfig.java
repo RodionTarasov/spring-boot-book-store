@@ -16,8 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -32,55 +30,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .cors(AbstractHttpConfigurer::disable)
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(
-//                        auth -> auth
-//                                .requestMatchers(
-//                                        "/swagger-ui/**",
-//                                        "/v3/api-docs/**",
-//                                        "/api/auth/**",
-//                                        "/error")
-//                                .permitAll()
-//                                .anyRequest()
-//                                .authenticated()
-//                )
-//                .httpBasic(withDefaults())
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .userDetailsService(userDetailsService)
-//                .build();
         return http
                 .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)     // убираем
-                .formLogin(AbstractHttpConfigurer::disable)
-
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/error").permitAll()
-                        .requestMatchers("/auth/**").permitAll()     // регистрация + логин
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers(
+                                        "/auth/**",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**"
+                                )
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated()
                 )
-
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
+                .sessionManagement(
+                        s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
-
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setContentType("application/json;charset=UTF-8");
-                            response.setStatus(401);
-                            response.getWriter().write("""
-                        {"status":401,"error":"Unauthorized","message":"%s","path":"%s"}
-                        """.formatted(authException.getMessage(), request.getRequestURI()));
-                        })
-                )
                 .build();
-
     }
 
     @Bean
