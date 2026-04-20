@@ -1,7 +1,7 @@
 package mate.academy.springbootbookstore.dto.book;
 
 import java.math.BigDecimal;
-
+import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -21,4 +21,5 @@ public class CreateBookRequestDto {
     private BigDecimal price;
     private String description;
     private String coverImage;
+    private Set<Long> categories;
 }

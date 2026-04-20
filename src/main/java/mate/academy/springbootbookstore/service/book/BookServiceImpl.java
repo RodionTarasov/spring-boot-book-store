@@ -2,6 +2,7 @@ package mate.academy.springbootbookstore.service.book;
 
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.book.BookDto;
+import mate.academy.springbootbookstore.dto.book.BookDtoWithoutCategoryIds;
 import mate.academy.springbootbookstore.dto.book.BookSearchParameters;
 import mate.academy.springbootbookstore.dto.book.CreateBookRequestDto;
 import mate.academy.springbootbookstore.exception.EntityNotFoundException;
@@ -66,5 +67,10 @@ public class BookServiceImpl implements BookService {
         book.setCoverImage(requestDto.getCoverImage());
         return bookMapper.toDto(bookRepository.save(book));
 
+    }
+
+    @Override
+    public Page<BookDtoWithoutCategoryIds> getBooksWithoutCategoryId(Long id, Pageable pageable) {
+        return bookRepository.findAllByCategories_Id(id, pageable);
     }
 }

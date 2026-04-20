@@ -1,6 +1,7 @@
 package mate.academy.springbootbookstore.service.book;
 
 import mate.academy.springbootbookstore.dto.book.BookDto;
+import mate.academy.springbootbookstore.dto.book.BookDtoWithoutCategoryIds;
 import mate.academy.springbootbookstore.dto.book.BookSearchParameters;
 import mate.academy.springbootbookstore.dto.book.CreateBookRequestDto;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,6 @@ public interface BookService {
     Page<BookDto> search(BookSearchParameters searchParameters, Pageable pageable);
 
     BookDto update(Long id, CreateBookRequestDto requestDto);
+
+    Page<BookDtoWithoutCategoryIds> getBooksWithoutCategoryId(Long id, Pageable pageable);
 }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import mate.academy.springbootbookstore.dto.book.BookDto;
+import mate.academy.springbootbookstore.dto.book.BookDtoWithoutCategoryIds;
 import mate.academy.springbootbookstore.dto.book.BookSearchParameters;
 import mate.academy.springbootbookstore.dto.book.CreateBookRequestDto;
 import mate.academy.springbootbookstore.service.book.BookService;
@@ -22,7 +23,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    @Operation(summary = "Get all books", description = "Get a list of all bools")
+    @Operation(summary = "Get all books", description = "Get a list of all books")
     public Page<BookDto> getAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
@@ -61,6 +62,15 @@ public class BookController {
             @Valid @RequestBody CreateBookRequestDto requestDto
     ) {
         return bookService.update(id, requestDto);
+    }
+
+    @GetMapping("/{id}/books")
+    @Operation(
+            summary = "Get books by category",
+            description = "Returns paginated book belonging to the category"
+    )
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable) {
+        return bookService.getBooksWithoutCategoryId(id, pageable);
     }
 }
 
