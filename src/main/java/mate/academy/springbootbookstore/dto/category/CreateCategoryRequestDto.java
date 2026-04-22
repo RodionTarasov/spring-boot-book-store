@@ -1,7 +1,9 @@
 package mate.academy.springbootbookstore.dto.category;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CreateCategoryRequestDto(
-    String name,
+    @NotBlank String name,
     String description
 ) {
 }
