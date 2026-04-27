@@ -10,6 +10,7 @@ import mate.academy.springbootbookstore.model.Role;
 import mate.academy.springbootbookstore.model.User;
 import mate.academy.springbootbookstore.repository.role.RoleRepository;
 import mate.academy.springbootbookstore.repository.user.UserRepository;
+import mate.academy.springbootbookstore.service.shoppingCart.ShoppingCartService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
@@ -34,11 +36,15 @@ public class UserServiceImpl implements UserService {
 
         Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role ROLE_USER not found in database.f")
+                        "Default role ROLE_USER not found in database.")
         );
 
         user.getRoles().add(role);
 
-        return userMapper.toDto(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+
+        shoppingCartService.createCart(savedUser);
+
+        return userMapper.toDto(savedUser);
     }
 }
