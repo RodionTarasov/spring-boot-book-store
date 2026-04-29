@@ -10,8 +10,11 @@ import mate.academy.springbootbookstore.model.Role;
 import mate.academy.springbootbookstore.model.User;
 import mate.academy.springbootbookstore.repository.role.RoleRepository;
 import mate.academy.springbootbookstore.repository.user.UserRepository;
+import mate.academy.springbootbookstore.service.shoppingCart.ShoppingCartService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 @Transactional
@@ -21,9 +24,11 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartService shoppingCartService;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
+        Role.RoleName roleName = Role.RoleName.USER;
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("User with this email already exists: " +
                     requestDto.getEmail());
@@ -32,13 +37,15 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
+        Role role = roleRepository.findByRole(roleName).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role ROLE_USER not found in database.f")
+                        "Default role " + roleName.name() + " not found in database.")
         );
 
-        user.getRoles().add(role);
+        user.setRoles(Set.of(role));
 
-        return userMapper.toDto(userRepository.save(user));
+        userRepository.save(user);
+        shoppingCartService.createCart(user);
+        return userMapper.toDto(user);
     }
 }
