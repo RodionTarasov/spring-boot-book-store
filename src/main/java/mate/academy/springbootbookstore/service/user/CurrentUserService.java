@@ -16,7 +16,7 @@ public class CurrentUserService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return userRepository.findByEmail(email).orElseThrow(
-                () -> new UsernameNotFoundException("Can't find user by email!" + email)
+                () -> new UsernameNotFoundException("Can't find user by email: " + email)
         );
     }
 }

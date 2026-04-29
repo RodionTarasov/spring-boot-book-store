@@ -10,9 +10,6 @@ import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
-
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +39,6 @@ public interface BookMapper {
         book.setCategories(categories);
     }
 
-    @Named("bookFromId")
     default Book bookFromId(Long id) {
         if (id == null) {
             return null;

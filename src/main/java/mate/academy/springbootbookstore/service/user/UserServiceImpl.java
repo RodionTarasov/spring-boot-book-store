@@ -14,6 +14,8 @@ import mate.academy.springbootbookstore.service.shoppingCart.ShoppingCartService
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
+        Role.RoleName roleName = Role.RoleName.USER;
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("User with this email already exists: " +
                     requestDto.getEmail());
@@ -34,17 +37,15 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
+        Role role = roleRepository.findByRole(roleName).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role ROLE_USER not found in database.")
+                        "Default role " + roleName.name() + " not found in database.")
         );
 
-        user.getRoles().add(role);
+        user.setRoles(Set.of(role));
 
-        User savedUser = userRepository.save(user);
-
-        shoppingCartService.createCart(savedUser);
-
-        return userMapper.toDto(savedUser);
+        userRepository.save(user);
+        shoppingCartService.createCart(user);
+        return userMapper.toDto(user);
     }
 }
