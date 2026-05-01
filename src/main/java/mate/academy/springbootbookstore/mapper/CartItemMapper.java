@@ -10,7 +10,6 @@ import org.mapstruct.Mapping;
 @Mapper(config = MapperConfig.class, uses = BookMapper.class)
 public interface CartItemMapper {
 
-    @Mapping(target = "book", source = "bookId")
     CartItem toModel(CreateCartItemRequestDto request);
 
     @Mapping(source = "book.id", target = "bookId")
