@@ -35,7 +35,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCart createCart(User user) {
         ShoppingCart shoppingCart = new ShoppingCart();
         shoppingCart.setUser(user);
-
         return shoppingCartRepository.save(shoppingCart);
     }
 
@@ -67,7 +66,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             item.setBook(book);
             shoppingCart.getCartItems().add(item);
         }
-
         return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
@@ -81,7 +79,6 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 ));
 
         cartItem.setQuantity(requestDto.quantity());
-
         return shoppingCartMapper.toDto(shoppingCart);
     }
 

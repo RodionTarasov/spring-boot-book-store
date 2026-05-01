@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto) {
-        Role.RoleName roleName = Role.RoleName.USER;
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new RegistrationException("User with this email already exists: " +
                     requestDto.getEmail());
@@ -37,9 +36,9 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
-        Role role = roleRepository.findByRole(roleName).orElseThrow(
+        Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role " + roleName.name() + " not found in database.")
+                        "Default role " + Role.RoleName.USER.name() + " not found in database.")
         );
 
         user.setRoles(Set.of(role));
