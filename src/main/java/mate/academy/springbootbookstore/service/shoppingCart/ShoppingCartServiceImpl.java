@@ -39,7 +39,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public ShoppingCartDto showShoppingCart() {
+    public ShoppingCartDto getShoppingCart() {
         ShoppingCart shoppingCart = findShoppingCart();
         return shoppingCartMapper.toDto(shoppingCart);
     }

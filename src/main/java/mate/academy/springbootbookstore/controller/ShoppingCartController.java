@@ -27,7 +27,7 @@ public class ShoppingCartController {
             description = "Returns shopping cart with all books for authenticated user"
     )
     public ShoppingCartDto showShoppingCart() {
-        return shoppingCartService.showShoppingCart();
+        return shoppingCartService.getShoppingCart();
     }
 
     @PostMapping
