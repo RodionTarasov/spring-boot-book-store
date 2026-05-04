@@ -1,4 +1,9 @@
 package mate.academy.springbootbookstore.dto.cartItem;
 
-public record UpdateCartItemRequestDto(int quantity) {
+import jakarta.validation.constraints.Positive;
+
+public record UpdateCartItemRequestDto(
+        @Positive
+        int quantity
+) {
 }

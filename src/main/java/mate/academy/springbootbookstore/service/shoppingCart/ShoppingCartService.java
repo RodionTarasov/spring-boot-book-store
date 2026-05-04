@@ -10,7 +10,7 @@ public interface ShoppingCartService {
 
     ShoppingCart createCart(User user);
 
-    ShoppingCartDto showShoppingCart();
+    ShoppingCartDto getShoppingCart();
 
     ShoppingCartDto addCartItem(CreateCartItemRequestDto requestDto);
 

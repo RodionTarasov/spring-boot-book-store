@@ -14,6 +14,8 @@ import mate.academy.springbootbookstore.service.shoppingCart.ShoppingCartService
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,15 +38,13 @@ public class UserServiceImpl implements UserService {
 
         Role role = roleRepository.findByRole(Role.RoleName.USER).orElseThrow(
                 () -> new RuntimeException(
-                        "Default role ROLE_USER not found in database.")
+                        "Default role " + Role.RoleName.USER.name() + " not found in database.")
         );
 
-        user.getRoles().add(role);
+        user.setRoles(Set.of(role));
 
-        User savedUser = userRepository.save(user);
-
-        shoppingCartService.createCart(savedUser);
-
-        return userMapper.toDto(savedUser);
+        userRepository.save(user);
+        shoppingCartService.createCart(user);
+        return userMapper.toDto(user);
     }
 }

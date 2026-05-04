@@ -27,7 +27,7 @@ public class ShoppingCartController {
             description = "Returns shopping cart with all books for authenticated user"
     )
     public ShoppingCartDto showShoppingCart() {
-        return shoppingCartService.showShoppingCart();
+        return shoppingCartService.getShoppingCart();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class ShoppingCartController {
             summary = "Add book to shopping cart",
             description = "Adds a new book or increases quantity if it already exists in cart"
     )
-    ShoppingCartDto addCartItem(@RequestBody @Valid CreateCartItemRequestDto requestDto) {
+    public ShoppingCartDto addCartItem(@RequestBody @Valid CreateCartItemRequestDto requestDto) {
         return shoppingCartService.addCartItem(requestDto);
     }
 
@@ -44,7 +44,7 @@ public class ShoppingCartController {
             summary = "Update quantity of a cart item",
             description = "Updates quantity of a specific book in shopping cart"
     )
-    ShoppingCartDto updateCartItem (
+    public ShoppingCartDto updateCartItem (
             @PathVariable Long cartItemId,
             @RequestBody UpdateCartItemRequestDto requestDto
     ) {
@@ -57,7 +57,7 @@ public class ShoppingCartController {
             summary = "Remove book from shopping cart",
             description = "Deletes a cart item by its ID"
     )
-    void deleteCartItem(Long cartItemId) {
+    public void deleteCartItem(Long cartItemId) {
         shoppingCartService.deleteCartItem(cartItemId);
     }
 }
