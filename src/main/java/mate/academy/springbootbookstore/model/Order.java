@@ -3,6 +3,8 @@ package mate.academy.springbootbookstore.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ import java.util.Set;
 @Table(name = "orders")
 @Setter
 @Getter
+@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id=?")
+@SQLRestriction("is_deleted = false")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +26,7 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(nullable = false)
@@ -35,6 +40,9 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<OrderItem> orderItems = new HashSet<>();
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     public enum Status {
         NEW,
