@@ -5,6 +5,8 @@ import mate.academy.springbootbookstore.dto.order.CreateOrderRequestDto;
 import mate.academy.springbootbookstore.dto.order.OrderDto;
 import mate.academy.springbootbookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.springbootbookstore.dto.orderItem.OrderItemDto;
+import mate.academy.springbootbookstore.exception.CustomException;
+import mate.academy.springbootbookstore.exception.EmptyShoppingCartException;
 import mate.academy.springbootbookstore.exception.EntityNotFoundException;
 import mate.academy.springbootbookstore.mapper.OrderItemMapper;
 import mate.academy.springbootbookstore.mapper.OrderMapper;
@@ -26,6 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -47,17 +50,14 @@ public class OrderServiceImpl implements OrderService {
         );
         Set<CartItem> cartItems = shoppingCart.getCartItems();
         if (cartItems.isEmpty()) {
-            throw new RuntimeException("Shopping cart is empty");
+            throw new EmptyShoppingCartException("Shopping cart with id: " +
+                    shoppingCart.getId() + " is empty");
         }
-        Order order = new Order();
+        Order order = orderMapper.toModel(requestDto, user);
         Set<OrderItem> orderItems = toOrderItems(cartItems, order);
 
-        order.setUser(user);
-        order.setOrderDate(LocalDateTime.now());
         order.setOrderItems(orderItems);
-        order.setStatus(Order.Status.NEW);
         order.setTotal(totalAmount(orderItems));
-        order.setShippingAddress(requestDto.shippingAddress());
 
         Order saveOrder = orderRepository.save(order);
         shoppingCart.getCartItems().clear();
@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto updateStatus(Long orderId, UpdateOrderStatusDto requestDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new RuntimeException("Order not found: " + orderId)
+                () -> new CustomException("Order not found: " + orderId)
         );
         order.setStatus(requestDto.status());
         return orderMapper.toDto(orderRepository.save(order));
@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new RuntimeException("Order not found: " + orderId)
         );
-        verification(order);
+        verifyOrderBelongsToUser(order);
 
         return orderItemRepository.findAllByOrderId(order.getId(), pageable)
                 .map(orderItemMapper::toDto);
@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new RuntimeException("Order not found: " + orderId)
         );
-        verification(order);
+        verifyOrderBelongsToUser(order);
 
         OrderItem item = order.getOrderItems().stream()
                 .filter(orderItem -> orderItem.getId().equals(orderItemId))
@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         return orderItemMapper.toDto(item);
     }
 
-    private void verification(Order order) {
+    private void verifyOrderBelongsToUser(Order order) {
         User user = currentUserService.getCurrentUser();
         if (!order.getUser().getId().equals(user.getId())) {
             throw new EntityNotFoundException("User not authorized to order!");
@@ -114,16 +114,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Set<OrderItem> toOrderItems(Set<CartItem> cartItems, Order order) {
-        Set<OrderItem> orderItems = new HashSet<>();
-        for (CartItem cartItem : cartItems) {
-            OrderItem orderItem = new OrderItem();
-            orderItem.setBook(cartItem.getBook());
-            orderItem.setQuantity(cartItem.getQuantity());
-            orderItem.setPrice(cartItem.getBook().getPrice());
-            orderItem.setOrder(order);
-            orderItems.add(orderItem);
-        }
-        return orderItems;
+        return cartItems.stream()
+                .map(cartItem -> orderItemMapper.toModel(cartItem, order))
+                .collect(Collectors.toSet());
     }
 
     private BigDecimal totalAmount(Set<OrderItem> orderItems) {
