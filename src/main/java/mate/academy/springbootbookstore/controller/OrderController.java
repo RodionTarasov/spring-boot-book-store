@@ -53,7 +53,7 @@ public class OrderController {
     )
     public OrderDto updateStatus(
             @PathVariable Long id,
-            @RequestBody UpdateOrderStatusDto requestDto
+            @RequestBody @Valid UpdateOrderStatusDto requestDto
     ) {
         return orderService.updateStatus(id, requestDto);
     }

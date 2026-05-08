@@ -1,7 +1,9 @@
 package mate.academy.springbootbookstore.dto.order;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import mate.academy.springbootbookstore.model.Order;
 
-public record UpdateOrderStatusDto (@NotBlank Order.Status status) {
+public record UpdateOrderStatusDto (
+        @NotNull Order.Status status
+) {
 }

@@ -8,6 +8,9 @@ import mate.academy.springbootbookstore.model.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.Collection;
+import java.util.List;
+
 @Mapper(config = MapperConfig.class)
 public interface OrderItemMapper {
 
@@ -20,4 +23,6 @@ public interface OrderItemMapper {
     @Mapping(source = "cartItem.book.price", target = "price")
     @Mapping(source = "order", target = "order")
     OrderItem toModel(CartItem cartItem, Order order);
+
+    List<OrderItemDto> toOrderItemDtoList(Collection<OrderItem> orderItems);
 }

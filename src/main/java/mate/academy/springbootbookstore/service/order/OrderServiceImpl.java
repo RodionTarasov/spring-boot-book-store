@@ -5,8 +5,7 @@ import mate.academy.springbootbookstore.dto.order.CreateOrderRequestDto;
 import mate.academy.springbootbookstore.dto.order.OrderDto;
 import mate.academy.springbootbookstore.dto.order.UpdateOrderStatusDto;
 import mate.academy.springbootbookstore.dto.orderItem.OrderItemDto;
-import mate.academy.springbootbookstore.exception.CustomException;
-import mate.academy.springbootbookstore.exception.EmptyShoppingCartException;
+import mate.academy.springbootbookstore.exception.OrderProcessingException;
 import mate.academy.springbootbookstore.exception.EntityNotFoundException;
 import mate.academy.springbootbookstore.mapper.OrderItemMapper;
 import mate.academy.springbootbookstore.mapper.OrderMapper;
@@ -21,12 +20,9 @@ import mate.academy.springbootbookstore.repository.shoppingCart.ShoppingCartRepo
 import mate.academy.springbootbookstore.service.user.CurrentUserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
         );
         Set<CartItem> cartItems = shoppingCart.getCartItems();
         if (cartItems.isEmpty()) {
-            throw new EmptyShoppingCartException("Shopping cart with id: " +
+            throw new OrderProcessingException("Shopping cart with id: " +
                     shoppingCart.getId() + " is empty");
         }
         Order order = orderMapper.toModel(requestDto, user);
@@ -75,7 +71,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto updateStatus(Long orderId, UpdateOrderStatusDto requestDto) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new CustomException("Order not found: " + orderId)
+                () -> new EntityNotFoundException("Order not found: " + orderId)
         );
         order.setStatus(requestDto.status());
         return orderMapper.toDto(orderRepository.save(order));
@@ -83,34 +79,25 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderItemDto> findAllOrderItems(Long orderId, Pageable pageable) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new RuntimeException("Order not found: " + orderId)
-        );
-        verifyOrderBelongsToUser(order);
-
-        return orderItemRepository.findAllByOrderId(order.getId(), pageable)
+        User user = currentUserService.getCurrentUser();
+        return orderItemRepository
+                .findAllByOrderIdAndOrderUserId(
+                        orderId,
+                        user.getId(),
+                        pageable
+                )
                 .map(orderItemMapper::toDto);
     }
 
     @Override
     public OrderItemDto findOrderItem(Long orderId, Long orderItemId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new RuntimeException("Order not found: " + orderId)
-        );
-        verifyOrderBelongsToUser(order);
-
-        OrderItem item = order.getOrderItems().stream()
-                .filter(orderItem -> orderItem.getId().equals(orderItemId))
-                .findFirst()
-                .orElseThrow(() -> new AccessDeniedException("Order item not found: " + orderItemId));
-        return orderItemMapper.toDto(item);
-    }
-
-    private void verifyOrderBelongsToUser(Order order) {
         User user = currentUserService.getCurrentUser();
-        if (!order.getUser().getId().equals(user.getId())) {
-            throw new EntityNotFoundException("User not authorized to order!");
-        }
+        OrderItem item = orderItemRepository
+                .findByIdAndOrderIdAndOrderUserId(orderItemId, orderId, user.getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Order item not found: " + orderItemId)
+                );
+        return orderItemMapper.toDto(item);
     }
 
     private Set<OrderItem> toOrderItems(Set<CartItem> cartItems, Order order) {
