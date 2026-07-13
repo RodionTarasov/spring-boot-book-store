@@ -22,7 +22,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
-
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
@@ -41,8 +40,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String token = getToken(request);
-
-        boolean isTokenValid = jwtUtil.IsValidateToken(token);
 
         if (token != null && jwtUtil.IsValidateToken(token)) {
             String username = jwtUtil.getUsername(token);

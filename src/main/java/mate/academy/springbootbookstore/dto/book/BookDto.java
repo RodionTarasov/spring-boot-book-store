@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
-public class    BookDto {
+public class BookDto {
     private Long id;
     private String title;
     private String author;

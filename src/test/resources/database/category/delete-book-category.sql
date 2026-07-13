@@ -1,0 +1,1 @@
+delete from categories where name = 'Name' and description = 'Description';
