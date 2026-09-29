@@ -3,6 +3,7 @@ package mate.academy.springbootbookstore.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import mate.academy.springbootbookstore.dto.category.CategoryDto;
 import mate.academy.springbootbookstore.dto.category.CreateCategoryRequestDto;
+import mate.academy.springbootbookstore.util.TestUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,9 +23,11 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,20 +46,15 @@ class CategoryControllerTest {
                 .webAppContextSetup(applicationContext)
                 .apply(springSecurity())
                 .build();
-        teardown(dataSource);
-
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database/category/add-three-default-categories.sql")
-            );
-        }
     }
 
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Create a new category")
+    @Sql(
+            scripts = "classpath:database/category/remove-all-categories.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
     @Sql(
             scripts = "classpath:database/category/delete-book-category.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
@@ -94,6 +92,14 @@ class CategoryControllerTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
     @DisplayName("Get all categories")
+    @Sql(
+            scripts = "classpath:database/category/add-three-default-categories.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/category/remove-all-categories.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
     void getAll_GivenCategoriesInList_ShouldReturnAllCategories() throws Exception {
         mockMvc.perform(get("/categories")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -108,20 +114,50 @@ class CategoryControllerTest {
 
     }
 
-    @AfterAll
-    static void afterAll(
-            @Autowired DataSource dataSource
-    ) throws SQLException {
-        teardown(dataSource);
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Get category by id")
+    @Sql(
+            scripts = "classpath:database/category/add-three-default-categories.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/category/remove-all-categories.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
+    void getCategoryById_Valid_Success() throws Exception {
+        CategoryDto expected = TestUtil.categoryDto();
+
+        MvcResult result = mockMvc.perform(
+                        get("/categories/2")
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        CategoryDto actual = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                CategoryDto.class
+        );
+
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
-    static void teardown(DataSource dataSource) throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource("database/category/remove-all-categories.sql")
-            );
-        }
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    @DisplayName("Delete category by id")
+    @Sql(
+            scripts = "classpath:database/category/add-three-default-categories.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
+    )
+    @Sql(
+            scripts = "classpath:database/category/remove-all-categories.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD
+    )
+    void deleteCategoryById_GivenCategoryId_Success() throws Exception {
+        mockMvc.perform(
+                delete("/categories/3")
+                )
+                .andExpect(status().isNoContent());
     }
 }

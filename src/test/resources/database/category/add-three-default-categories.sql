@@ -1,3 +1,4 @@
-insert into categories (name, description) values ( 'Thriller', 'Description Thriller');
-insert into categories (name, description) values ('Drama', 'Description Drama');
-insert into categories (name, description) values ('Historical', 'Description Historical');
+insert into categories (id, name, description) values
+                                               (1, 'Thriller', 'Description Thriller'),
+                                               (2, 'Drama', 'Description Drama'),
+                                               (3,'Historical', 'Description Historical');
