@@ -1,45 +1,69 @@
-# Spring Boot Book Store
+BOOK STORE API
 
-## Description
+Overview:
 
-Spring Boot REST API application for a book store.  
-The project uses MySQL as a database and runs in Docker containers.
+    Book Store is a RESTful API built with Spring Boot for managing an online bookstore. It provides 
+    endpoints for managing books and categories, searching for books, and controlling access to
+    protected operations.
 
----
+Technologies:
 
-## Requirements
+    Java 17
+    Spring Boot
+    Spring Data JPA and Hibernate
+    Spring Security and JWT
+    MySQL
+    Liquibase
+    MapStruct
+    Swagger / OpenAPI
+    JUnit and Spring Boot Test
+    Maven
 
-- Docker
-- Docker Compose
+Features:
 
----
+    Retrieve books with pagination.
+    Search books by specified parameters.
+    Create, update, and delete books.
+    Manage book categories.
+    Associate books with multiple categories.
+    Authenticate users and authorize requests based on roles.
+    Restrict administrative operations to users with the ADMIN role.
+    Document and test API endpoints using Swagger and automated tests.
 
-## Setup
+GETTING STARTED
 
-### 1. Create `.env` file
+Prerequisites:
 
-```bash
-cp .env.template .env
+    Java 17 or later
+    Maven
+    MySQL
 
-2. Run application
-docker compose up --build
+Installation:
+    
+    1. Clone the repository.
+    2. Create a MySQL database.
+    3. Configure database credentials and other required settings in application.properties or the corresponding environment variables.
+    4. Run the application using Maven:
 
-Access
-API URL: http://localhost:8088/api
+    mvn spring-boot:run
 
-Environment variables
-MySQL
-MYSQLDB_ROOT_PASSWORD
-MYSQLDB_DATABASE
-MYSQLDB_USER
-MYSQLDB_PASSWORD
-MYSQLDB_LOCAL_PORT
-MYSQLDB_DOCKER_PORT
-Spring Boot
-SPRING_LOCAL_PORT
-SPRING_DOCKER_PORT
-DEBUG_PORT
-Security
+    Liquibase manages database schema migrations.
 
-Never commit .env file to the repository.
-Use .env.template instead.
+API Documentation:
+
+    After starting the application, open the Swagger UI at:
+
+    http://localhost:8080/swagger-ui/index.html
+
+    Check the application's configuration for the correct port and context path.
+
+TESTING
+
+    Run the automated tests with:
+    mvn test
+
+FUTURE IMPROVEMENTS:
+
+    Expand automated test coverage.
+    Improve API documentation.
+    Add additional bookstore management features.
